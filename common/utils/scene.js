@@ -14,28 +14,17 @@ class Drawable{
     constructor(gl,shape = null) {
         this.shape = shape
         this.gl = gl
-        this.vBuffer = this.gl.createBuffer()
-        this.iBuffer = this.gl.createBuffer()
+        if(this.shape.isContour) {
+            this.typeOfDraw = this.gl.LINES
+        }else{
+            this.typeOfDraw = this.gl.TRIANGLES
+        }
     }
     createObject(){
         //https://stackoverflow.com/questions/2647867/how-can-i-determine-if-a-variable-is-undefined-or-null
         if(this.shape == null){
             return
         }
-        if(this.shape.isContour) {
-            this.typeOfDraw = this.gl.LINES
-        }else{
-            this.typeOfDraw = this.gl.TRIANGLES
-        }
-
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.vBuffer)
-        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.shape.vertexs,this.gl.STATIC_DRAW)
-
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
-        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,this.shape.indexs,this.gl.STATIC_DRAW)
-
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,null)
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,null)
     }
 
 }
@@ -47,6 +36,8 @@ class sceneElement {
         this.drawable= drawable
         this.rotationMatrix = glMatrix.mat4.create()
         this.scaleMatrix = glMatrix.mat4.create()
+        this.vBuffer = this.drawable.gl.createBuffer()
+        this.iBuffer = this.drawable.gl.createBuffer()
         this.translationMatrix = glMatrix.mat4.create()
         //Father frame
         this.fMatrix = glMatrix.mat4.create()
@@ -93,15 +84,25 @@ class sceneElement {
         return this.drawable
     }
     drawObject(){
-        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,this.drawable.vBuffer)
+        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,this.vBuffer)
         this.drawable.gl.enableVertexAttribArray(Shaders['aPosition'])
         this.drawable.gl.vertexAttribPointer(Shaders['aPosition'],3,gl.FLOAT,false,0,0)
 
-        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,this.drawable.iBuffer)
+        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
         this.drawable.gl.uniform4f(Shaders['uColor'],...this.color,1)
         this.drawable.gl.uniformMatrix4fv(Shaders['uM'],false,this.getFrame())
         this.drawable.gl.drawElements(this.drawable.typeOfDraw,this.drawable.shape.indexs.length,this.drawable.gl.UNSIGNED_SHORT,0)
         this.drawable.gl.disableVertexAttribArray(Shaders["aPosition"])
+        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,null)
+        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,null)
+    }
+    createObject(){
+        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,this.vBuffer)
+        this.drawable.gl.bufferData(this.drawable.gl.ARRAY_BUFFER,this.drawable.shape.vertexs,this.drawable.gl.STATIC_DRAW)
+
+        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
+        this.drawable.gl.bufferData(this.drawable.gl.ELEMENT_ARRAY_BUFFER,this.drawable.shape.indexs,this.drawable.gl.STATIC_DRAW)
+
         this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,null)
         this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,null)
     }
@@ -120,10 +121,10 @@ class sceneNode {
         //insert parallel code here
         //Todo graph traversal
         if(this.element.drawable != null){
-            this.element.drawable.createObject()
+            this.element.createObject()
             this.element.drawObject()
             this.figli[0].element.setFatherFrame(this.element.getFrame())
-            this.figli[0].element.drawable.createObject()
+            this.figli[0].element.createObject()
             this.figli[0].element.drawObject()
         }
 
