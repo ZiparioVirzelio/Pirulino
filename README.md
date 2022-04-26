@@ -2,7 +2,7 @@
 A simple graphics engine in Javascript
 
 # TODO  
-Traverse graph and draw
+Recalc of matrixes for scene : Done
 
 Rotation manager
 
