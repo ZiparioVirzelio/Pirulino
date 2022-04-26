@@ -1,5 +1,11 @@
 # Pirulino
 A simple graphics engine in Javascript
 
-# TODO
-Refactoring scene and moving createObject from Drawable to sceneElement
+# TODO  
+Traverse graph and draw
+Rotation manager
+Moving Camera
+Lighting
+Textures
+Meshes
+Keyboard input
