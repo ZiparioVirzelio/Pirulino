@@ -10,34 +10,12 @@
 * */
 
 
-class Drawable{
-    constructor(gl,shape = null) {
-        this.shape = shape
-        this.gl = gl
-        if(this.shape.isContour) {
-            this.typeOfDraw = this.gl.LINES
-        }else{
-            this.typeOfDraw = this.gl.TRIANGLES
-        }
-    }
-    createObject(){
-        //https://stackoverflow.com/questions/2647867/how-can-i-determine-if-a-variable-is-undefined-or-null
-        if(this.shape == null){
-            return
-        }
-    }
-
-}
-
 class sceneElement {
-    constructor(name = "Default_element",color = [1,0,1],drawable = null){
+    constructor(name = "Default_element",color = [1,0,1]){
         this.name = name
         this.color = color
-        this.drawable= drawable
         this.rotationMatrix = glMatrix.mat4.create()
         this.scaleMatrix = glMatrix.mat4.create()
-        this.vBuffer = this.drawable.gl.createBuffer()
-        this.iBuffer = this.drawable.gl.createBuffer()
         this.translationMatrix = glMatrix.mat4.create()
         //Father frame
         this.fMatrix = glMatrix.mat4.create()
@@ -80,56 +58,88 @@ class sceneElement {
     getColor(){
         return this.color
     }
-    getDrawable(){
-        return this.drawable
-    }
-    drawObject(){
-        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,this.vBuffer)
-        this.drawable.gl.enableVertexAttribArray(Shaders['aPosition'])
-        this.drawable.gl.vertexAttribPointer(Shaders['aPosition'],3,gl.FLOAT,false,0,0)
-
-        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
-        this.drawable.gl.uniform4f(Shaders['uColor'],...this.color,1)
-        this.drawable.gl.uniformMatrix4fv(Shaders['uM'],false,this.getFrame())
-        this.drawable.gl.drawElements(this.drawable.typeOfDraw,this.drawable.shape.indexs.length,this.drawable.gl.UNSIGNED_SHORT,0)
-        this.drawable.gl.disableVertexAttribArray(Shaders["aPosition"])
-        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,null)
-        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,null)
-    }
-    createObject(){
-        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,this.vBuffer)
-        this.drawable.gl.bufferData(this.drawable.gl.ARRAY_BUFFER,this.drawable.shape.vertexs,this.drawable.gl.STATIC_DRAW)
-
-        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
-        this.drawable.gl.bufferData(this.drawable.gl.ELEMENT_ARRAY_BUFFER,this.drawable.shape.indexs,this.drawable.gl.STATIC_DRAW)
-
-        this.drawable.gl.bindBuffer(this.drawable.gl.ARRAY_BUFFER,null)
-        this.drawable.gl.bindBuffer(this.drawable.gl.ELEMENT_ARRAY_BUFFER,null)
-    }
 
 
 }
 
 class sceneNode {
-    constructor(sceneElement,figli = []) {
-        if(sceneElement == null || figli == null)
+    constructor(element,figli = []) {
+        if(figli == null)
             alert("[Scene node constructor] passed null params")
-        this.element = sceneElement
+        this.element = element
         this.figli = figli
     }
-    drawGraph(){
-        //insert parallel code here
-        //Todo graph traversal
-        if(this.element.drawable != null){
-            this.element.createObject()
-            this.element.drawObject()
-            this.figli[0].element.setFatherFrame(this.element.getFrame())
-            this.figli[0].element.createObject()
-            this.figli[0].element.drawObject()
+    getDrawable(){
+        return this.element
+    }
+    addFiglio(drawab){
+        this.figli.push(drawab)
+    }
+    calcScene(){
+        sceneNode.recCalcScene(this,identity())
+    }
+    static recCalcScene(sNode,acc){
+        if(sNode.element == null){
+            sNode.figli.forEach((figlio)=>{
+                sceneNode.recCalcScene(figlio,acc)
+            })
+            return
         }
+        sNode.element.setFatherFrame(acc)
+        sNode.figli.forEach((figlio) =>{
+            sceneNode.recCalcScene(figlio,sNode.element.getFrame())
+        })
 
     }
 
+
+
+
+
+
+}
+
+class Drawable extends sceneElement{
+
+    constructor(gl,name = "Default_element",color = [1,0,0],shape = null) {
+        super(name,color)
+        this.shape = shape
+        this.order = 0
+        this.gl = gl
+        this.vBuffer = this.gl.createBuffer()
+        this.iBuffer = this.gl.createBuffer()
+        if(this.shape != null){
+            if (this.shape.isContour) {
+                this.typeOfDraw = this.gl.LINES
+            } else {
+                this.typeOfDraw = this.gl.TRIANGLES
+            }
+        }
+    }
+    drawObject(){
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.vBuffer)
+        this.gl.enableVertexAttribArray(Shaders['aPosition'])
+        this.gl.vertexAttribPointer(Shaders['aPosition'],3,gl.FLOAT,false,0,0)
+
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
+        this.gl.uniform4f(Shaders['uColor'],...this.color,1)
+        this.gl.uniformMatrix4fv(Shaders['uM'],false,this.getFrame())
+        this.gl.drawElements(this.typeOfDraw,this.shape.indexs.length,this.gl.UNSIGNED_SHORT,0)
+        this.gl.disableVertexAttribArray(Shaders["aPosition"])
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,null)
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,null)
+    }
+    createObject(){
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.vBuffer)
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,this.shape.vertexs,this.gl.STATIC_DRAW)
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,this.shape.indexs,this.gl.STATIC_DRAW)
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,null)
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,null)
+    }
+    setOrder(order){
+        this.order = order
+    }
 
 
 }

@@ -17,20 +17,39 @@ function setup(){
 
 
 function createScene(){
-    var cube = new Drawable(gl,new Cube(true))
-    var cube2 = new Drawable(gl,new Cube(true))
-    var element = new sceneElement("cube",[1,0,0],cube)
-    var element2 = new sceneElement("cube2",[1,0,1,],cube2)
-    element.translate([1,1,1])
-    element2.rotateY(3.14/10)
-    //element2.translate([1,1,1])
-    var node2 = new sceneNode(element2,[])
-    return new sceneNode(element, [node2])
+    var shape = new Cube(true)
+    var shape2 = new Cube(false)
+    var cube = new Drawable(gl,"pancrazio",[1,0,1],shape)
+    var cube2 = new Drawable(gl,"pancrazio",[1,1,0],shape2)
+    var graph = new sceneNode(null)
+    var node1 = new sceneNode(cube)
+    var node2 = new sceneNode(cube2)
+    graph.addFiglio(node1)
+    node1.addFiglio(node2)
+    cube.createObject()
+    cube2.createObject()
+    //Il pattern e' del tipo
+    /*
+    * creo la struttura di gerarchia
+    * istanzio la roba in gpu
+    * transformazioni
+    * calcolo matrici
+    * disegna oggetti*/
+    cube.translate([0,0,0])
+    cube.rotateY(3.14/3)
+    cube2.translate([1,0,0])
+    graph.calcScene()
+
+    cube.drawObject()
+    cube2.drawObject()
+
+
+
+
 }
 
 function drawScene(){
     var graph = createScene()
-    graph.drawGraph()
    // window.requestAnimationFrame(drawScene)
 }
 setup()
