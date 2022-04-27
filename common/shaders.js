@@ -11,6 +11,7 @@ const Shaders = {
     void main(void){
         vec4 pos = projMatrix * viewMatrix * uM * vec4(aPosition, 1.0);
         gl_Position =  pos;
+         gl_PointSize = 5.0;
     }
     `,
 
