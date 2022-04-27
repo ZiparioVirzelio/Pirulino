@@ -16,5 +16,6 @@ Meshes
 
 Keyboard input
 
-#Run the example
+#Execute
+
 Just download the repository,unzip it and open index.html in your favourite browser,tested "only" in JetBrains WebStorm, Edge and Firefox
