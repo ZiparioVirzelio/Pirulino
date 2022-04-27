@@ -126,11 +126,6 @@ class sceneNode {
             })
     }
 
-
-
-
-
-
 }
 
 class Drawable extends sceneElement{
@@ -142,13 +137,7 @@ class Drawable extends sceneElement{
         this.gl = gl
         this.vBuffer = this.gl.createBuffer()
         this.iBuffer = this.gl.createBuffer()
-        if(this.shape != null){
-            if (this.shape.isContour) {
-                this.typeOfDraw = this.gl.LINES
-            } else {
-                this.typeOfDraw = this.gl.TRIANGLES
-            }
-        }
+
     }
     drawObject(){
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.vBuffer)
@@ -158,7 +147,7 @@ class Drawable extends sceneElement{
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,this.iBuffer)
         this.gl.uniform4f(Shaders['uColor'],...this.color,1)
         this.gl.uniformMatrix4fv(Shaders['uM'],false,this.getFrame())
-        this.gl.drawElements(this.typeOfDraw,this.shape.indexs.length,this.gl.UNSIGNED_SHORT,0)
+        this.gl.drawElements(this.gl[this.shape.drawingType],this.shape.indexs.length,this.gl.UNSIGNED_SHORT,0)
         this.gl.disableVertexAttribArray(Shaders["aPosition"])
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER,null)
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,null)

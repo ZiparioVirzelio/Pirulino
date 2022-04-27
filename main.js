@@ -17,8 +17,8 @@ function setup(){
 
 
 function createScene(){
-    var shape = new Cube(false)
-    var shape2 = new Cube(false)
+    var shape = theCube
+    var shape2 = theCube
     var cube = new Drawable(gl,"pancrazio",[0,0,1],shape)
     var cube2 = new Drawable(gl,"pancrazio",[0,1,0],shape2)
     var cube3 = new Drawable(gl,"pancrazio",[1,0,0],shape2)
