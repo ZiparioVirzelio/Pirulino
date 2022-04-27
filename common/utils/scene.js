@@ -63,7 +63,8 @@ class sceneElement {
 }
 
 class sceneNode {
-    constructor(element,figli = []) {
+    // Drawable , sceneNode[]
+    constructor(element ,figli = []) {
         if(figli == null)
             alert("[Scene node constructor] passed null params")
         this.element = element
@@ -90,6 +91,39 @@ class sceneNode {
             sceneNode.recCalcScene(figlio,sNode.element.getFrame())
         })
 
+    }
+    calcSceneDraw(){ //useful when you want perpetual movement
+        sceneNode.recCalcSceneDraw(this,glMatrix.mat4.create())
+    }
+    static recCalcSceneDraw(sNode,acc){
+        if(sNode.element == null){
+            sNode.figli.forEach((figlio)=>{
+                sceneNode.recCalcSceneDraw(figlio,acc)
+            })
+            return
+        }
+        sNode.element.setFatherFrame(acc)
+        sNode.element.drawObject()
+        sNode.figli.forEach((figlio) =>{
+            sceneNode.recCalcSceneDraw(figlio,sNode.element.getFrame())
+        })
+
+    }
+    redrawScene(){
+        sceneNode.recRedrawScene(this)
+    }
+    static recRedrawScene(sNode){
+        if(sNode.element == null){
+            sNode.figli.forEach((figlio)=>{
+                sceneNode.recRedrawScene(figlio)
+            })
+            return
+        }
+            sNode.element.drawObject()
+            sNode.figli.forEach((figlio) =>{
+                figlio.element.drawObject()
+                sceneNode.recRedrawScene(figlio)
+            })
     }
 
 
