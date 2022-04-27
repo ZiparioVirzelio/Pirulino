@@ -1,5 +1,6 @@
 
 function setup(){
+    gl.enable(gl.CULL_FACE)
     gl.enable(gl.DEPTH_TEST)
     gl.useProgram(Shaders.program)
     gl.clearColor(0.3,0.8,0.8,0.8)
@@ -19,9 +20,10 @@ function setup(){
 function createScene(){
     var shape = theCube
     var shape2 = theCube
+    var shape3 = theCylinder10
     var cube = new Drawable(gl,"pancrazio",[0,0,1],shape)
     var cube2 = new Drawable(gl,"pancrazio",[0,1,0],shape2)
-    var cube3 = new Drawable(gl,"pancrazio",[1,0,0],shape2)
+    var cube3 = new Drawable(gl,"pancrazio",[1,0,0],shape3)
 
     var graph = new sceneNode(null)
     var node1 = new sceneNode(cube)
