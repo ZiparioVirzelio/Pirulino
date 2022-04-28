@@ -73,8 +73,8 @@ class sceneNode {
     getDrawable(){
         return this.element
     }
-    addFiglio(drawab){
-        this.figli.push(drawab)
+    addFiglio(element){
+        this.figli.push(element)
     }
     calcScene(){
         sceneNode.recCalcScene(this,identity())
@@ -95,6 +95,8 @@ class sceneNode {
     calcSceneDraw(){ //useful when you want perpetual movement
         sceneNode.recCalcSceneDraw(this,glMatrix.mat4.create())
     }
+
+
     static recCalcSceneDraw(sNode,acc){
         if(sNode.element == null){
             sNode.figli.forEach((figlio)=>{
@@ -103,11 +105,15 @@ class sceneNode {
             return
         }
         sNode.element.setFatherFrame(acc)
-        sNode.element.drawObject()
+//se l'elemento non ha la funzione draw (serve solo per immagazzinare le matrici) allora non viene chiamata draw
+
+        if(sNode.element.drawObject != null)
+            sNode.element.drawObject()
+
+
         sNode.figli.forEach((figlio) =>{
             sceneNode.recCalcSceneDraw(figlio,sNode.element.getFrame())
         })
-
     }
     redrawScene(){
         sceneNode.recRedrawScene(this)
@@ -119,9 +125,12 @@ class sceneNode {
             })
             return
         }
-            sNode.element.drawObject()
+
+            if(sNode.element.drawObject != null)
+                sNode.element.drawObject()
             sNode.figli.forEach((figlio) =>{
-                figlio.element.drawObject()
+                if(sNode.element.drawObject != null)
+                    sNode.element.drawObject()
                 sceneNode.recRedrawScene(figlio)
             })
     }
@@ -163,6 +172,5 @@ class Drawable extends sceneElement{
     setOrder(order){
         this.order = order
     }
-
 
 }

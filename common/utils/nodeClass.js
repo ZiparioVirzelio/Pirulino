@@ -5,7 +5,7 @@ class SceneNode{
         this.figli = []
     }
     addFiglio(node){
-        node.drawable.setFatherFrame(this.drawable.getFrame)
+        node.drawable.setFatherFrame(this.drawable.getFrame())
         this.figli.push(node)
     }
     getDrawable(){

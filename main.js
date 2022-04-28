@@ -18,6 +18,7 @@ function setup(){
 
 
 function createScene(){
+
     var shape = theCube
     var shape2 = theCubeContour
     var shape3 = theCubePoints
@@ -25,7 +26,13 @@ function createScene(){
     var cube2 = new Drawable(gl,"pancrazio",[0,1,0],shape2)
     var cube3 = new Drawable(gl,"pancrazio",[1,0,0],shape3)
 
+
+    var mamma = new sceneElement("mamma")
+    mamma.translate([0,-4,0])
+
     var graph = new sceneNode(null)
+    var mammaNode = new sceneNode(mamma, [graph])
+
     var node1 = new sceneNode(cube)
     var node2 = new sceneNode(cube2)
     var node3 = new sceneNode(cube3)
@@ -46,9 +53,8 @@ function createScene(){
     //cube.rotateY(3.14/3)
     cube2.translate([0,2,0])
     cube3.translate([2,0,0])
-    graph.calcScene()
     //node1.redrawScene()
-    return node1
+    return mammaNode
 
 
 
